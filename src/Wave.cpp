@@ -188,7 +188,7 @@ public:
     }
 
     // * Nghe file wav.
-    void play(){
+    void play() {
         loadChannelsToBuffer();
         sf::Sound sound;
         sound.setBuffer(_soundBuffer);
@@ -196,9 +196,12 @@ public:
         sleep(getDurationAsSeconds());
     }
 
-    // * Lấy độ dài của 
-    float getDurationAsSeconds() const{
-        return getSampleCount() * 1.0f / 44100;
+    // * @return Độ dài âm thanh file (second).
+    float getDurationAsSeconds() const {
+        if(_sample_rate.empty()){
+            return 0;
+        }
+        return getSampleCount() * 1.0f / _sample_rate;
     }
 
     // * Lấy số lượng kênh 1 = Mono | 2 = Stereo , etc

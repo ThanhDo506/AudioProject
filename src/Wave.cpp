@@ -263,6 +263,7 @@ class Wave
         sb.saveToFile(fileName);
     }
 
+
 private:
     // * Mảng chứa mẫu
     std::vector<sf::Int16> _samples;

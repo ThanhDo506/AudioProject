@@ -392,7 +392,7 @@ namespace GUI{
     }
 
     void c_MulSamplesWithConst(Wave &wav) {
-        int n;
+        double n;
         bool check = true;
         char c;
         while(check){

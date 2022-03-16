@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <unistd.h>
+#include <algorithm> 
 
 using std::vector;
 using std::string;

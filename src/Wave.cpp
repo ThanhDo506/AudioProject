@@ -4,6 +4,7 @@ class Wave
 {
 public:
     Wave() {
+        _number_of_channels = 0;
         _sample_rate = 0;
         _file_name = "NULL";
     }
@@ -38,7 +39,7 @@ public:
         return wav;
     }
 
-    // * Phép nhân tín hiệu với một hằng số nguyên.
+    // * Phép nhân tín hiệu với một hằng số.
     // * @param number    hằng
     // * @return new Wave
     Wave operator*(const double &number) {
@@ -71,18 +72,17 @@ public:
         return wav;
     }
 
-    Wave copy() const {
+    Wave copy() {
         Wave wav;
         wav._samples = this->_samples;
         wav._number_of_channels = this->_number_of_channels;
         wav._sample_rate = this->_sample_rate;
-        wav._soundBuffer = this->_soundBuffer;
         return wav;
     }
 
     // * Trả về một object Wave với Mẫu bị đảo ngược.
     // * @return new Wave
-    Wave reverseWave() const {
+    Wave reverseWave() {
         Wave wav;
         wav._samples = this->_samples;
         reverse(wav._samples.begin(), wav._samples.end());
@@ -93,7 +93,7 @@ public:
     // * Tạo ra một echo Wave
     // * @param n   Số lần lặp
     // * @return  Wave
-    Wave echoWave(const int &n) const {
+    Wave echoWave(const int &n) {
         Wave wav;
         wav._samples = this->_samples;
         for (int i = 1; i < n; i++) {
@@ -101,14 +101,13 @@ public:
                                         this->_samples.begin(),
                                         this->_samples.end());
         }
-        // wav.loadChannelsToBuffer();
         return wav;
     }
 
     // * Tạo ra một Wave bị delay.
     // * @param millisecond Số giây delay
     // * @return  new Wave
-    Wave delayWave(const int &milliseconds) const {
+    Wave delayWave(const int &milliseconds) {
         Wave wav;
         wav._samples = this->_samples;
         wav._samples.insert(wav._samples.begin(),
@@ -119,7 +118,7 @@ public:
     // * Tích chập của Wave này với Wave other
     // * @param Wave    other
     // * @return Wave là tích chập
-    Wave tichChap(const Wave &other) const {
+    Wave tichChap(const Wave &other) {
         Wave wav;
         vector<double> wav_t = Wave::toLow(this->_samples),
                        wav_o = Wave::toLow(other._samples);
@@ -146,7 +145,7 @@ public:
     // * Tương quan chéo giữa 2 Wave
     // * @param Wave    other
     // * @return Wave là tương quan chéo
-    Wave tuongQuanCheo(const Wave &other) const {
+    Wave tuongQuanCheo(const Wave &other) {
         Wave wav;
         vector<double> wav_t = Wave::toLow(this->_samples),
                        wav_o = Wave::toLow(other._samples);
@@ -188,17 +187,25 @@ public:
     }
 
     // * Nghe file wav.
-    void play() {
-        loadChannelsToBuffer();
+    // * Mặc dù có thể load hẳn lại vào _soundBuffer
+    // * Nhưng thư viện của SFML/Audio nó chạy không đúng
+    // * Khiến file gốc âm thanh sau khi chuyển đổi nhiều lần
+    // * Dẫn đến biến dạng tần số (cụ thể là tần số x2)
+    // * Do cũng không cần tính toán trên _soundBuffer
+    // * Vậy nên bây giờ _soundBuffer chỉ có nhiệm vụ là lấy thông tin
+    // * từ file wav, không còn tác dụng nào khác
+    void play() const {
+        sf::SoundBuffer sb;
+        sb.loadFromSamples(&_samples[0], _samples.size(), _number_of_channels, _sample_rate);
         sf::Sound sound;
-        sound.setBuffer(_soundBuffer);
+        sound.setBuffer(sb);
         sound.play();
         sleep(getDurationAsSeconds());
     }
 
     // * @return Độ dài âm thanh file (second).
     float getDurationAsSeconds() const {
-        if(_sample_rate.empty()){
+        if(_samples.empty()){
             return 0;
         }
         return getSampleCount() * 1.0f / _sample_rate;
@@ -206,7 +213,7 @@ public:
 
     // * Lấy số lượng kênh 1 = Mono | 2 = Stereo , etc
     // * @return Số lượng kênh
-    sf::Int16 getChannel() {
+    sf::Int16 getChannel() const {
         return _soundBuffer.getChannelCount();
     }
 
@@ -238,7 +245,6 @@ public:
             file.close();
             _number_of_channels = 2;
             _sample_rate = 44100;
-            loadChannelsToBuffer();
         } else if (fileName.substr(fileName.size() - 4) == ".wav") {
             _soundBuffer.loadFromFile(fileName);
             loadBufferToChannels();
@@ -253,7 +259,7 @@ public:
     }
 
     // * @return Tần số mẫu
-    int getSampleRate() const {
+    unsigned int getSampleRate() const {
         return _sample_rate;
     }
 
@@ -266,7 +272,7 @@ private:
     sf::SoundBuffer _soundBuffer;
 
     // * Tần số mẫu
-    int _sample_rate;
+    unsigned int _sample_rate;
 
     // * Số lượng kênh, thường là 2 | Stereo
     int _number_of_channels;
@@ -297,13 +303,6 @@ private:
         }
         return res;
     }
-        
-    
-    // * Tải giá trị mẫu vào _soundBuffer
-    // * Phục vụ cho quá trình play
-    void loadChannelsToBuffer() {
-        this->_soundBuffer.loadFromSamples(&_samples[0], _samples.size(), _number_of_channels, _sample_rate);
-    }
 
     // * Tải giá trị mẫu từ _soundBuffer
     void loadBufferToChannels() {
@@ -314,7 +313,7 @@ private:
         }
         _number_of_channels = _soundBuffer.getChannelCount();
         _sample_rate = _soundBuffer.getSampleRate();
-    }
+
 };
 
 

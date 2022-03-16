@@ -120,7 +120,7 @@ namespace GUI{
             printf("\t||    2.  Thay doi Tan so mau.                                  ||\n");   // * DONE
             printf("\t||    3.  Thay doi che do kenh MONO | STEREO.                   ||\n");   // * DONE
             printf("\t||    4.  Dao nguoc tin hieu mau.                               ||\n");   // * DONE
-            printf("\t||    5.  Nhan tin hieu voi 1 hang so                           ||\n");
+            printf("\t||    5.  Nhan tin hieu voi 1 hang so                           ||\n");   // * DONE
             printf("\t||        Luu y: - Chi nen nhan so thuoc khoang (-1, 1).        ||\n");
             printf("\t||               - May ban ra di thi dung hoi tai sao :)        ||\n");
             printf("\t||    6.  Tao hieu ung Echo.                                    ||\n");   // * DONE
@@ -197,8 +197,7 @@ namespace GUI{
             if(fileName.substr(fileName.length() - 4) == ".txt" ||
                fileName.substr(fileName.length() - 4) == ".wav") {
                 try {
-                    wav = Wave(fileName);
-                    // printf("\n\tDoc file thanh cong!\n");
+                    wav.loadFromFile(fileName);
                 } catch (const std::exception &e) {
                     std::cerr << e.what() << '\n';
                 }
@@ -301,6 +300,48 @@ namespace GUI{
     }
 
     void c_echoSamples(Wave &wav) {
+        int n;
+        bool check = true;
+        char c;
+        while(check){
+            system("cls");
+            printf("\tChuong trinh Dieu chinh Am thanh (Sound Equalizer Program) v1.0\n");
+            printf("\n");
+            printf("\t||==============================================================||\n");
+            printf("\t||====================**||MAKE ECHO SOUND||**===================||\n");
+            printf("\t||==============================================================||\n");
+            printf("\n");
+            printf("\n||\tBan muon tin hieu lap lai may lan (>1): ");
+            cin >> n;
+            if(n <= 0) {
+                printf("\n\t||\tKhong hop le!\n\t||\tBan muon nhap lai khong ? (Y/y = YES | N/n (other) = NO): ");
+                cin >> c;
+                if (c == 'Y' || c == 'y') {
+                    check = true;
+                } else {
+                    check = false;
+                }
+            } else if (n >= 5) {
+                printf("\n\t||\tMay lag hoac bi lam sao thi minh khong biet dau!");
+                printf("\n\t||\tBan co muon nhap lai gia tri khong hay tiep tuc voi gia tri n = %d?", n);
+                printf("\n\t||\t(Y/y = YES | N/n (other) = NO): ");
+                cin >> c;
+                if (c != 'Y' && c != 'y') {
+                    check = true;      
+                    continue;
+                }
+
+            } else {
+                continue;
+            }
+            printf("\t||\tDang xu li ...\n");
+            wav = wav * n;
+            printf("\t||\tXu li thanh cong!\n");
+            system("pause");
+        }
+    }
+
+    void c_MulSamplesWithConst(Wave &wav) {
         int n;
         bool check = true;
         char c;

@@ -63,8 +63,6 @@ namespace GUI{
     // * Tương quan chéo
     void c_tuongQuanCheo(Wave &wav);
 
-    void graph(const Wave &wav);
-
     // * Ghi file
     void writeToFile(Wave &wav);
 
@@ -203,9 +201,9 @@ namespace GUI{
                 case 13:
                     writeToFile(wav);
                     break;
-                case 14:
-                    graph(wav);
-                    break;
+                // case 14:
+                    // graph(wav);
+                    // break;
                 default:
                     printf("||\tKhong co chuc nang nay!\n");
                     break;
@@ -264,6 +262,8 @@ namespace GUI{
             }
         }
     }
+
+
 
     void changeSampleRate(Wave &wav) {
         int value;
@@ -563,6 +563,7 @@ namespace GUI{
         } 
     }
 
+
     void c_tichChap(Wave &wav) {
         int n;
         char c;
@@ -590,6 +591,7 @@ namespace GUI{
         } 
     }
 
+
     void c_tuongQuanCheo(Wave &wav) {
         int n;
         char c;
@@ -615,11 +617,6 @@ namespace GUI{
         if (c == 'Y' || c == 'y') {
             writeToFile(waves[0]);
         } 
-    }
-
-    void graph(const Wave &wav) {
-        printf("\n\t||\tXin loi tinh nang nay dang phat trien!\n");
-        sleep(2);
     }
 }
 

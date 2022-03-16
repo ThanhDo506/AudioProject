@@ -31,7 +31,6 @@ class Wave
             w1[i] += w2[i];
         }
         wav._samples = w1;
-
         return wav;
     }
 
@@ -68,6 +67,8 @@ class Wave
         return wav;
     }
 
+    // * Tạo ra một bản sao của object
+    // * @return copied Wave
     Wave copy() {
         Wave wav;
         wav._samples = this->_samples;
@@ -179,22 +180,18 @@ class Wave
     }
 
     // * Nghe file wav.
-    // * Mặc dù có thể load hẳn lại vào _soundBuffer
-    // * Nhưng thư viện của SFML/Audio nó chạy không đúng
-    // * Khiến file gốc âm thanh sau khi chuyển đổi nhiều lần
-    // * Dẫn đến biến dạng tần số (cụ thể là tần số x2)
-    // * Do cũng không cần tính toán trên _soundBuffer
-    // * Vậy nên bây giờ _soundBuffer chỉ có nhiệm vụ là lấy thông tin
-    // * từ file wav, không còn tác dụng nào khác
     void play() {
         sf::SoundBuffer sb;
         sb.loadFromSamples(&_samples[0], _samples.size(), 1, _sample_rate);
         sf::Sound sound;
         sound.setBuffer(sb);
         sound.play();
+        // * Phải cho chương trình ngủ thì biến sound mới tồn tại
+        // * nếu không khi đó tức chương trình con của hàm kết thúc
+        // * đồng nghĩa việc biến sound bị hủy khi chưa phát được hết âm thanh
         sleep(getDurationAsSeconds());
-        // system("pause");
     }
+    
 
     // * @return Độ dài âm thanh file (second).
     float getDurationAsSeconds() const {
@@ -246,6 +243,7 @@ class Wave
         }
         _file_name = fileName;
     }
+
     
     // * @return Tên file WAV / TXT
     std::string getSource() const {
